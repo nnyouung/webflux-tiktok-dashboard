@@ -17,12 +17,42 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webflux-test'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// .env 파일을 읽어 bootRun 환경변수로 주입
+tasks.named('bootRun') {
+	def envFile = rootProject.file('.env')
+	if (envFile.exists()) {
+		envFile.readLines().each { line ->
+			def trimmed = line.trim()
+			if (trimmed && !trimmed.startsWith('#') && trimmed.contains('=')) {
+				def idx = trimmed.indexOf('=')
+				def key = trimmed.substring(0, idx).trim()
+				def val = trimmed.substring(idx + 1).trim()
+				environment(key, val)
+			}
+		}
+	}
 }
