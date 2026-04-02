@@ -138,7 +138,7 @@ StreamManagerService
 | type | 발생 시점 | 주요 필드 |
 |------|----------|----------|
 | `snapshot` | SSE 연결 시 초기값 | `live`, `viewerCount` |
-| `like` | 좋아요 | `likeCount` |
+| `like` | 좋아요 | `likeCount`(이번 이벤트), `totalLikes`(누적 합계) |
 | `chat` | 채팅 | `comment` |
 | `member` | 시청자 입장 | `viewerCount` |
 | `roomInfo` | 방 정보 갱신 | `viewerCount`, `title` |
