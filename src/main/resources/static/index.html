@@ -16,7 +16,6 @@
       flex-direction: column;
     }
 
-    /* ── Header ── */
     header {
       display: flex;
       align-items: center;
@@ -56,7 +55,7 @@
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+      50% { opacity: 0.3; }
     }
 
     .btn {
@@ -68,12 +67,11 @@
       cursor: pointer;
       transition: opacity 0.2s, transform 0.1s;
     }
-    .btn:hover  { opacity: 0.85; }
+    .btn:hover { opacity: 0.85; }
     .btn:active { transform: scale(0.97); }
-    .btn-mock       { background: #25d366; color: #000; }
+    .btn-mock { background: #25d366; color: #000; }
     .btn-mock.active { background: #fe2c55; color: #fff; }
 
-    /* ── Main layout ── */
     main {
       display: grid;
       grid-template-columns: 340px 1fr;
@@ -82,7 +80,6 @@
       overflow: hidden;
     }
 
-    /* ── Left panel ── */
     .left-panel {
       background: #111118;
       border-right: 1px solid #2a2a3e;
@@ -121,6 +118,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
+      gap: 8px;
     }
     .streamer-name {
       font-size: 0.9rem;
@@ -129,7 +127,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 180px;
+      max-width: 150px;
     }
     .live-badge {
       display: flex;
@@ -156,7 +154,7 @@
       height: 6px;
       border-radius: 50%;
     }
-    .live-badge.live    .badge-dot { background: #25d366; }
+    .live-badge.live .badge-dot { background: #25d366; }
     .live-badge.offline .badge-dot { background: #555; }
 
     .card-stats {
@@ -183,7 +181,6 @@
       color: #ccc;
     }
 
-    /* ── Right panel ── */
     .right-panel {
       display: flex;
       flex-direction: column;
@@ -243,7 +240,7 @@
       text-align: center;
       color: #555;
     }
-    .rank-number.gold   { color: #ffd700; }
+    .rank-number.gold { color: #ffd700; }
     .rank-number.silver { color: #c0c0c0; }
     .rank-number.bronze { color: #cd7f32; }
 
@@ -270,7 +267,7 @@
     .rank-bar-fill {
       height: 100%;
       border-radius: 2px;
-      transition: width 0.5s ease;
+      transition: width 0.18s linear;
     }
     .likes-bar    { background: linear-gradient(90deg, #fe2c55, #ff6b8a); }
     .comments-bar { background: linear-gradient(90deg, #25a0e3, #5ec8ff); }
@@ -284,7 +281,6 @@
       text-align: right;
     }
 
-    /* ── Event log (bottom strip) ── */
     .event-log {
       background: #0a0a12;
       border-top: 1px solid #1e1e2e;
@@ -303,14 +299,15 @@
     .log-entry {
       animation: fadeInLog 0.3s ease;
     }
-    .log-entry .log-time   { color: #333; }
-    .log-entry .log-type   { font-weight: 700; }
-    .log-entry .log-type.like    { color: #fe2c55; }
-    .log-entry .log-type.chat    { color: #25a0e3; }
-    .log-entry .log-type.member  { color: #7c3aed; }
+    .log-entry .log-time { color: #333; }
+    .log-entry .log-type { font-weight: 700; }
+    .log-entry .log-type.like { color: #fe2c55; }
+    .log-entry .log-type.chat { color: #25a0e3; }
+    .log-entry .log-type.member { color: #7c3aed; }
     .log-entry .log-type.roomInfo { color: #ffc107; }
     .log-entry .log-type.snapshot { color: #25d366; }
-    .log-entry .log-type.gift    { color: #ff8c00; }
+    .log-entry .log-type.gift { color: #ff8c00; }
+
     .mock-tag {
       font-size: 0.63rem;
       font-weight: 700;
@@ -335,10 +332,9 @@
 
     @keyframes fadeInLog {
       from { opacity: 0; transform: translateX(-10px); }
-      to   { opacity: 1; transform: translateX(0); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
-    /* ── Scrollbars ── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 2px; }
@@ -358,13 +354,11 @@
 </header>
 
 <main>
-  <!-- Left: Streamer list -->
   <div class="left-panel">
     <div class="panel-title">스트리머 목록</div>
     <div class="streamer-list" id="streamer-list"></div>
   </div>
 
-  <!-- Right: Rankings -->
   <div class="right-panel">
     <div class="rankings-grid">
       <div class="ranking-section">
@@ -397,22 +391,25 @@
 </div>
 
 <script>
-  // 콘솔 로그는 기본 OFF. 필요하면 URL에 ?debug=1 을 붙여서 켜기.
   const DEBUG = new URLSearchParams(location.search).has('debug');
-  // ── 설정 ──────────────────────────────────────────────────────────────────
-  // 실제 TikTok 계정으로 교체하거나, Mock 버튼으로 테스트 가능
-  const STREAMERS = [
-    '',
-    '',
-    '',
-    '',
-    '',
-  ];
 
-  // ── 상태 ──────────────────────────────────────────────────────────────────
+  const STREAMERS = [
+    'cjs6130',
+    'dyrtyl86yuys',
+    'goteczu_live',
+    'jusk0605',
+    'jindoxng',
+  ].filter(Boolean);
+
   const stats = {};
   STREAMERS.forEach(id => {
-    stats[id] = { likes: 0, comments: 0, viewers: 0, live: false, hasReal: false };
+    stats[id] = {
+      likes: 0,
+      comments: 0,
+      viewers: 0,
+      live: false,
+      hasReal: false
+    };
   });
 
   let mockTimer = null;
@@ -420,16 +417,16 @@
   const LOG_MAX = 6;
   let logEntries = [];
 
-  // ── 유틸 ──────────────────────────────────────────────────────────────────
   function fmt(n) {
-    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-    if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K';
-    return String(n);
+    const num = Number(n || 0);
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M';
+    if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K';
+    return String(num);
   }
 
   function nowStr() {
     const d = new Date();
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
   }
 
   function rankClass(i) {
@@ -439,16 +436,16 @@
     return '';
   }
 
-  // ── 스트리머 등록 ──────────────────────────────────────────────────────────
   async function registerAll() {
     for (const id of STREAMERS) {
       try {
-        await fetch(`/manager/register/${id}`, { method: 'POST' });
-      } catch (_) { /* 이미 등록됐거나 서버 오류는 무시 */ }
+        await fetch(`/manager/register/${encodeURIComponent(id)}`, { method: 'POST' });
+      } catch (e) {
+        if (DEBUG) console.warn('register fail:', id, e);
+      }
     }
   }
 
-  // ── SSE 연결 ───────────────────────────────────────────────────────────────
   function connectSSE() {
     setConnStatus('connecting');
 
@@ -462,15 +459,23 @@
       setConnStatus('connected');
     };
 
-    eventSource.onmessage = (e) => {
+    const handleSsePayload = (e) => {
       let event;
       try {
         event = JSON.parse(e.data);
       } catch (_) {
-        return; // JSON 파싱 실패만 무시
+        return;
       }
-      handleEvent(event); // renderAll 에러가 있으면 콘솔에 노출
+      handleEvent(event);
     };
+
+    eventSource.onmessage = handleSsePayload;
+    eventSource.addEventListener('snapshot', handleSsePayload);
+    eventSource.addEventListener('like', handleSsePayload);
+    eventSource.addEventListener('chat', handleSsePayload);
+    eventSource.addEventListener('member', handleSsePayload);
+    eventSource.addEventListener('roomInfo', handleSsePayload);
+    eventSource.addEventListener('gift', handleSsePayload);
 
     eventSource.onerror = () => {
       setConnStatus('error');
@@ -480,119 +485,142 @@
   }
 
   function setConnStatus(status) {
-    const dot  = document.getElementById('conn-dot');
+    const dot = document.getElementById('conn-dot');
     const text = document.getElementById('conn-text');
     dot.className = 'dot ' + status;
-    const labels = { connecting: '연결 중...', connected: '연결됨', error: '재연결 중...' };
+    const labels = {
+      connecting: '연결 중...',
+      connected: '연결됨',
+      error: '재연결 중...'
+    };
     text.textContent = labels[status] || status;
   }
 
-  // ── 이벤트 처리 ────────────────────────────────────────────────────────────
   function handleEvent(event) {
     const { type, uniqueId } = event;
     const s = stats[uniqueId];
     if (!s) {
-      console.warn('[SKIP] 등록되지 않은 uniqueId:', uniqueId, event);
+      if (DEBUG) console.warn('[SKIP] 등록되지 않은 uniqueId:', uniqueId, event);
       return;
     }
 
-    if (DEBUG) {
-      console.log('[EVENT]', type, uniqueId, 'likeCount:', event.likeCount, 'viewerCount:', event.viewerCount, 'comment:', event.comment);
+    if (!event.mock && type !== 'snapshot') {
+      s.hasReal = true;
     }
-
-    if (!event.mock && type !== 'snapshot') s.hasReal = true;
 
     switch (type) {
       case 'snapshot':
-        s.viewers = event.viewerCount || 0;
-        s.live    = !!event.live;
+        s.viewers = Number(event.viewerCount || 0);
+        s.live = !!event.live;
         break;
+
       case 'like':
-        if (event.totalLikes > 0) {
-          s.likes = event.totalLikes;  // 누적 총합으로 덮어씀
-        } else {
-          s.likes += (event.likeCount || 0);  // totalLikes 없으면 델타로 폴백
-        }
+        s.likes += Number(event.likeCount || 0);
         s.live = true;
         break;
+
       case 'chat':
         s.comments += 1;
         s.live = true;
         break;
+
       case 'member':
-        s.viewers = event.viewerCount || 0;
+        if (event.viewerCount !== undefined && event.viewerCount !== null) {
+          s.viewers = Number(event.viewerCount || 0);
+        }
         s.live = true;
         break;
+
       case 'roomInfo':
-        s.viewers = event.viewerCount || 0;
+        if (event.viewerCount !== undefined && event.viewerCount !== null) {
+          s.viewers = Number(event.viewerCount || 0);
+        }
         s.live = true;
         break;
+
+      case 'gift':
+        s.live = true;
+        break;
+
+      default:
+        return;
     }
 
     if (DEBUG) {
-      console.log('[STATS]', uniqueId, JSON.stringify(stats[uniqueId]));
+      console.log('[EVENT]', type, uniqueId, event);
     }
-    renderAll();
+
+    updateStreamerCard(uniqueId);
+    renderRankings();
     addLog(event);
   }
 
-  // ── 렌더링 ─────────────────────────────────────────────────────────────────
-  function renderAll() {
-    renderStreamerList();
-    renderRankings();
+  function renderStreamerListOnce() {
+    const list = document.getElementById('streamer-list');
+    list.innerHTML = STREAMERS.map(id => `
+      <div class="streamer-card" id="card-${id}">
+        <div class="card-header">
+          <span class="streamer-name" title="${id}">${id}</span>
+          <div style="display:flex;gap:5px;align-items:center">
+            <span class="mock-tag" id="source-${id}">MOCK</span>
+            <span class="live-badge offline" id="badge-${id}">
+              <span class="badge-dot"></span>OFFLINE
+            </span>
+          </div>
+        </div>
+        <div class="card-stats">
+          <div class="card-stat">
+            <div class="label">시청자</div>
+            <div class="value" id="viewers-${id}">0</div>
+          </div>
+          <div class="card-stat">
+            <div class="label">좋아요</div>
+            <div class="value" id="likes-${id}">0</div>
+          </div>
+          <div class="card-stat">
+            <div class="label">댓글</div>
+            <div class="value" id="comments-${id}">0</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
   }
 
-  function renderStreamerList() {
-    const list = document.getElementById('streamer-list');
-    list.innerHTML = STREAMERS.map(id => {
-      const s = stats[id];
-      const liveClass = s.live ? 'live' : 'offline';
-      const liveLabel = s.live ? 'LIVE' : 'OFFLINE';
-      const sourceTag = s.hasReal
-        ? `<span class="real-tag">REAL</span>`
-        : `<span class="mock-tag">MOCK</span>`;
-      return `
-        <div class="streamer-card${s.hasReal ? ' has-real' : ''}">
-          <div class="card-header">
-            <span class="streamer-name" title="${id}">${id}</span>
-            <div style="display:flex;gap:5px;align-items:center">
-              ${sourceTag}
-              <span class="live-badge ${liveClass}">
-                <span class="badge-dot"></span>${liveLabel}
-              </span>
-            </div>
-          </div>
-          <div class="card-stats">
-            <div class="card-stat">
-              <div class="label">시청자</div>
-              <div class="value">${fmt(s.viewers)}</div>
-            </div>
-            <div class="card-stat">
-              <div class="label">좋아요</div>
-              <div class="value">${fmt(s.likes)}</div>
-            </div>
-            <div class="card-stat">
-              <div class="label">댓글</div>
-              <div class="value">${fmt(s.comments)}</div>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
+  function updateStreamerCard(id) {
+    const s = stats[id];
+    if (!s) return;
+
+    document.getElementById(`viewers-${id}`).textContent = fmt(s.viewers);
+    document.getElementById(`likes-${id}`).textContent = fmt(s.likes);
+    document.getElementById(`comments-${id}`).textContent = fmt(s.comments);
+
+    const badge = document.getElementById(`badge-${id}`);
+    badge.className = `live-badge ${s.live ? 'live' : 'offline'}`;
+    badge.innerHTML = `<span class="badge-dot"></span>${s.live ? 'LIVE' : 'OFFLINE'}`;
+
+    const source = document.getElementById(`source-${id}`);
+    source.className = s.hasReal ? 'real-tag' : 'mock-tag';
+    source.textContent = s.hasReal ? 'REAL' : 'MOCK';
+
+    const card = document.getElementById(`card-${id}`);
+    card.classList.toggle('has-real', s.hasReal);
   }
 
   function renderRankings() {
-    renderRanking('ranking-likes',    'likes',    'likes-bar');
+    renderRanking('ranking-likes', 'likes', 'likes-bar');
     renderRanking('ranking-comments', 'comments', 'comments-bar');
-    renderRanking('ranking-viewers',  'viewers',  'viewers-bar');
+    renderRanking('ranking-viewers', 'viewers', 'viewers-bar');
   }
 
   function renderRanking(containerId, statKey, barClass) {
     const sorted = [...STREAMERS].sort((a, b) => stats[b][statKey] - stats[a][statKey]);
-    const maxVal = stats[sorted[0]][statKey] || 1;
+    const maxVal = stats[sorted[0]]?.[statKey] || 0;
     const el = document.getElementById(containerId);
+
     el.innerHTML = sorted.map((id, i) => {
-      const val = stats[id][statKey];
-      const pct = Math.max(4, Math.round((val / maxVal) * 100));
+      const val = Number(stats[id][statKey] || 0);
+      const pct = maxVal <= 0 ? 0 : Math.round((val / maxVal) * 100);
+
       return `
         <div class="ranking-item">
           <span class="rank-number ${rankClass(i)}">${i + 1}</span>
@@ -603,37 +631,45 @@
             </div>
           </div>
           <span class="rank-value">${fmt(val)}</span>
-        </div>`;
+        </div>
+      `;
     }).join('');
   }
 
-  // ── 이벤트 로그 ────────────────────────────────────────────────────────────
   function addLog(event) {
     const { type, uniqueId } = event;
-    if (type === 'snapshot') return; // 스냅샷은 로그 생략
+    if (type === 'snapshot') return;
 
     let detail = '';
-    if (type === 'like')    detail = `+${event.likeCount} likes`;
-    else if (type === 'chat')    detail = `"${(event.comment || '').substring(0, 20)}"`;
-    else if (type === 'member')  detail = `${fmt(event.viewerCount)} viewers`;
-    else if (type === 'roomInfo') detail = `${fmt(event.viewerCount)} viewers`;
-    else if (type === 'gift')    detail = `${event.giftName} x${event.giftCount}`;
+    if (type === 'like') detail = `+${event.likeCount || 0} likes`;
+    else if (type === 'chat') detail = `"${(event.comment || '').substring(0, 20)}"`;
+    else if (type === 'member') detail = `${fmt(event.viewerCount || 0)} viewers`;
+    else if (type === 'roomInfo') detail = `${fmt(event.viewerCount || 0)} viewers`;
+    else if (type === 'gift') detail = `${event.giftName || 'gift'} x${event.giftCount || 1}`;
 
-    logEntries.unshift({ time: nowStr(), type, uniqueId, detail, mock: !!event.mock });
-    if (logEntries.length > LOG_MAX) logEntries.length = LOG_MAX;
+    logEntries.unshift({
+      time: nowStr(),
+      type,
+      uniqueId,
+      detail,
+      mock: !!event.mock
+    });
 
-    document.getElementById('event-log').innerHTML = logEntries.map(e =>
-      `<span class="log-entry">
+    if (logEntries.length > LOG_MAX) {
+      logEntries.length = LOG_MAX;
+    }
+
+    document.getElementById('event-log').innerHTML = logEntries.map(e => `
+      <span class="log-entry">
         <span class="log-time">[${e.time}]</span>
         ${e.mock ? '<span class="mock-tag">MOCK</span>' : '<span class="real-tag">REAL</span>'}
         <span class="log-type ${e.type}">${e.type}</span>
         <span>${e.uniqueId}</span>
         <span>${e.detail}</span>
-      </span>`
-    ).join('');
+      </span>
+    `).join('');
   }
 
-  // ── Mock 토글 ─────────────────────────────────────────────────────────────
   function toggleMock() {
     const btn = document.getElementById('mock-btn');
     if (mockTimer) {
@@ -651,9 +687,9 @@
     }
   }
 
-  // ── 초기화 ────────────────────────────────────────────────────────────────
   (async function init() {
-    renderAll(); // 빈 상태로 초기 렌더
+    renderStreamerListOnce();
+    renderRankings();
     await registerAll();
     connectSSE();
   })();
