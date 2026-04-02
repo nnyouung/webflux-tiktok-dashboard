@@ -508,7 +508,11 @@
         s.live    = !!event.live;
         break;
       case 'like':
-        s.likes += (event.likeCount || 0);
+        if (event.totalLikes > 0) {
+          s.likes = event.totalLikes;  // 누적 총합으로 덮어씀
+        } else {
+          s.likes += (event.likeCount || 0);  // totalLikes 없으면 델타로 폴백
+        }
         s.live = true;
         break;
       case 'chat':

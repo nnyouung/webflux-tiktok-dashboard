@@ -18,7 +18,8 @@ public class TikTokEvent {
     String comment;     // chat
     String giftName;    // gift
     int giftCount;      // gift
-    int likeCount;      // like
+    int likeCount;      // like (이번 이벤트에서 보낸 수)
+    long totalLikes;    // like (스트림 전체 누적 좋아요)
     int viewerCount;    // member, roomInfo
     long followerCount; // roomInfo
     String title;       // roomInfo

@@ -170,7 +170,7 @@ public class EulerConnector {
             }
             // Newer TikTok webcast schema (e.g. "WebcastChatMessage") → normalize to our internal types.
             case "WebcastChatMessage" -> buildChatEvent(streamerId, d.path("user"), d.path("comment").asText(""));
-            case "WebcastLikeMessage" -> buildLikeEvent(streamerId, d.path("user"), extractLikeCount(d));
+            case "WebcastLikeMessage" -> buildLikeEvent(streamerId, d.path("user"), extractLikeCount(d), extractTotalLikes(d));
             case "WebcastRoomPinMessage" -> {
                 // Pin message can contain an embedded WebcastChatMessage under data.chatMessage.
                 com.fasterxml.jackson.databind.JsonNode chat = d.path("chatMessage");
@@ -190,6 +190,7 @@ public class EulerConnector {
                     .userId(d.path("user").path("userId").asText(""))
                     .nickname(d.path("user").path("nickname").asText(""))
                     .likeCount(d.path("likeCount").asInt(1))
+                    .totalLikes(extractTotalLikes(d))
                     .timestamp(Instant.now())
                     .build();
             case "chat" -> TikTokEvent.builder()
@@ -240,13 +241,15 @@ public class EulerConnector {
 
     private TikTokEvent buildLikeEvent(String streamerId,
                                       com.fasterxml.jackson.databind.JsonNode userNode,
-                                      int likeCount) {
+                                      int likeCount,
+                                      long totalLikes) {
         return TikTokEvent.builder()
                 .type("like")
                 .uniqueId(streamerId)
                 .userId(userNode.path("userId").asText(""))
                 .nickname(userNode.path("nickname").asText(""))
                 .likeCount(likeCount)
+                .totalLikes(totalLikes)
                 .timestamp(Instant.now())
                 .build();
     }
@@ -256,6 +259,12 @@ public class EulerConnector {
         if (likeCount <= 0) likeCount = d.path("count").asInt(0);
         if (likeCount <= 0) likeCount = d.path("diggCount").asInt(0);
         return likeCount > 0 ? likeCount : 1;
+    }
+
+    private long extractTotalLikes(com.fasterxml.jackson.databind.JsonNode d) {
+        long total = d.path("totalLikes").asLong(0);
+        if (total <= 0) total = d.path("totalLikeCount").asLong(0);
+        return total;
     }
 
     private TikTokEvent buildNotLiveSnapshot(String uniqueId) {
